@@ -20,5 +20,10 @@
 
 ### Fixed
 
+- `make git` no longer creates empty commits: all pending tracking rows in a
+  staging window now ride one real commit (first pending summary as the
+  subject, the rest under "Also includes:", one `[run_id]` trailer each), and
+  with a clean tree the rows simply wait for the next real commit instead of
+  committing empty markers.
 - Dry-run no longer creates a missing target directory.
 - Generated MCP JSON and TOML preserve paths containing quotes and backslashes.
