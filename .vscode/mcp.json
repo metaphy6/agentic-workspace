@@ -1,6 +1,16 @@
 {
   "$schema": "https://modelcontextprotocol.io/schema/mcp.json",
-  "$comment": "VS Code Copilot MCP config. VS Code reads both this file and .mcp.json — codegraph is defined only in .mcp.json (with the project's absolute path baked in by scaffold.sh) to avoid duplicate servers. Add other project-specific MCP servers here.",
-  "servers": {},
+  "$comment": "VS Code Copilot MCP config. Keep the project-scoped CodeGraph entry here so custom agents can use codegraph/*.",
+  "servers": {
+    "codegraph": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@colbymchenry/codegraph", "serve", "--mcp"],
+      "env": {
+        "$comment": "Since v1.x codegraph lists only codegraph_explore by default; this re-lists the full tool surface.",
+        "CODEGRAPH_MCP_TOOLS": "explore,node,search,callers,callees,impact"
+      }
+    }
+  },
   "inputs": []
 }
