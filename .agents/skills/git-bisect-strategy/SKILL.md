@@ -1,6 +1,6 @@
 ---
 name: git-bisect-strategy
-description: "Git Bisect Strategy. You need to find which commit introduced a bug, regression, or performance"
+description: "Locate a regression in Git history using a reliable reproducer when manual inspection is insufficient."
 ---
 
 # Git Bisect Strategy

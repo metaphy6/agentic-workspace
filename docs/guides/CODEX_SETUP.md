@@ -48,6 +48,11 @@ instructions before work. These adaptations change client mechanics only:
   The coordinating parent owns tracking and staging; children return evidence
   and never append duplicate tracking rows or stage one another's work.
   Use `--agent=codex` in tracking commands even when source examples say copilot.
+  Before final staging, reviewers and verifiers inspect the complete current
+  diff, including unstaged changes and new files supplied by the parent.
+  References to a staged diff in source workflows also accept this review set.
+  Children verify tests and scope first; the parent then appends the completion
+  row, stages, and checks the final staged diff and tracking metadata.
 - `/plan`, `/implement`, `/review`, `/verify`, `/track`, `/self-review`,
   `/session-bootstrap` and `/roadmap-status` refer to the corresponding
   `$avb-*` skills in Codex. These are not installed as native slash commands.
@@ -55,8 +60,9 @@ instructions before work. These adaptations change client mechanics only:
 - Replace references to VS Code edit tools with the available patch tool;
   replace VS Code task runners with the documented shell commands. If a memory
   tool is unavailable, use `docs/tracking/state/` for repository-local recovery.
-- Use the CodeGraph explore tool actually advertised by the connected server.
-  Do not invent older `node`, `search` or `callers` tools. If the server is
+- Use only CodeGraph tools actually advertised by the connected server.
+  The generated configuration preserves its `env` settings, including tool
+  selection; do not assume a particular tool set is available. If the server is
   unavailable or an index is missing, report it and use local reads/searches.
   Never silently claim graph-backed results or bypass a required check.
 - Respect `--no-mcp` and `--no-skills`: do not automatically undo these opt-outs.
@@ -82,6 +88,16 @@ query against an actual symbol in your project. Configuration parsing alone
 does not prove the client loaded it or that the server is healthy.
 
 ## Repeat Installs And Portability
+
+The framework repository itself contains the shared rules and skills; native
+`.codex/` roles and `avb-*` adapters are generated in the target by the installer.
+Cloning this framework alone is not the same as scaffolding a project.
+
+Shared anti-skills retain Copilot's `user-invocable: false` metadata. Codex
+discovered these six skills in the audit session, but its generic skill-creator
+validator rejects that extra field. This is a cross-client metadata difference;
+it does not hide the skills in Codex. Preserve the Copilot setting when sharing
+the same skill tree, and verify discovery in your actual client.
 
 Existing files are preserved unless `--force` is supplied. A kept configuration
 is not automatically merged: review it against a fresh scaffold before updating.

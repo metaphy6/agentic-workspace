@@ -16,8 +16,8 @@ session hygiene). Project files win for domain logic.
 
 # 🤖 AGENTS.md — operating rules for AI coding assistants
 
-You are an AI coding assistant (GitHub Copilot, Claude, or a local model)
-working in this repository.
+You are an AI coding assistant (OpenAI Codex, GitHub Copilot, Claude, or a
+local model) working in this repository.
 
 The mental model: **act like a senior software engineer responsible for the
 long-term health of this codebase.** Stability, security, reliability,
@@ -74,12 +74,19 @@ Every task must terminate in **exactly one** of these states:
 | State | When | What you do |
 |---|---|---|
 | `staged` | Gates green AND working tree has real changes | Append tracking row with `commit_sha=pending`, then `git add -A`. Report files staged + `run_id`. |
-| `reverted` | Any gate failed | `git restore .` (or `git reset --hard HEAD` if local-only). Append a tracking row with `action=revert`, `status=failed`. No staging. |
+| `reverted` | A gate cannot be repaired within scope and this task's edits can be safely isolated | Undo only this task's edits, preserving pre-existing and concurrent work. Append `action=revert`, `status=failed`. No staging. |
 | `no-op` | `git status -s` was already clean and no edits were needed | Say so in one line. |
 | `blocked` | A real blocker (rebase needed, decision required, scope outside allow-list) | Write `docs/tracking/state/checkpoint.json`, append `action=block`/`status=blocked` row, report. |
 
 You are **forbidden** from inventing a fifth state ("I'll let you review and
 commit"). If gates are green and the diff is real, **you stage**.
+
+A failed gate first enters the recovery loop in §5a; it does not authorize
+discarding work. Never use blanket restore/reset commands to recover from a
+test failure. If ownership is ambiguous, preserve the diff and report `blocked`.
+Inspect the complete staging set for unrelated work and secrets before `git add -A`.
+Delegated agents return evidence; only the coordinating parent tracks and stages.
+Read-only reviews need no artificial edits or completion commit row.
 
 **Forbidden git operations under all circumstances:** `git commit`,
 `git push`, `git push --force`, `git push --force-with-lease`,
@@ -265,12 +272,13 @@ short — one read costs you nothing and saves entire rewrites.
 
 **CodeGraph-first rule.** This repository is indexed by CodeGraph. For any
 question about source code — how a symbol works, where it is defined, what
-calls it, or what it affects — use the appropriate `mcp_codegraph_*` tool
-first (`explore`, `search`, `node`, or `callers`). Do not start with
+calls it, or what it affects — use an appropriate CodeGraph tool advertised
+by the current session first. Tool names and availability vary by client. Do not start with
 `read_file` or `grep_search` for symbol lookup, call-graph questions, or
-understanding how code works. Fall back to raw reads/searches only for files
-CodeGraph does not index (configs, docs, build scripts) or when a tool
-response flags the file as stale. See
+understanding how code works when a healthy graph tool is available. Use raw
+reads/searches for unindexed files, stale results, or an unavailable server/index;
+report the limitation. Respect `--no-mcp`; never install or initialize a disabled
+integration automatically. See
 [`codegraph-management`](.agents/skills/codegraph-management/SKILL.md) for the
 tool-to-intent mapping and re-index rules.
 
@@ -289,6 +297,11 @@ Especially load before the matching work:
 ---
 
 ## 10. 🤖 Model-specific notes
+
+- **Codex** — `AGENTS.md` and `.agents/skills/` are native discovery surfaces.
+  Read `docs/guides/CODEX_SETUP.md` for generated roles, prompt adapters and
+  runtime translation. Use tools actually available in the session; Copilot
+  tool names, slash commands and YAML metadata are not Codex APIs.
 
 This framework is designed to behave identically across assistants. Two
 known divergences require explicit attention:

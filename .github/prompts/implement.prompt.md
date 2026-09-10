@@ -57,14 +57,14 @@ process bullets in order.
 4. Run the project's test gate. If red:
    - Read the log (via [`xops/agent/safe-run.sh`](../../xops/agent/safe-run.sh)).
    - Diagnose the root cause; fix it.
-   - Restart from a clean tree if needed.
+   - Repair the current working tree; preserve pre-existing and concurrent changes.
 5. Append a tracking row via
    [`xops/agent/tracking_append.sh`](../../xops/agent/tracking_append.sh):
    `--action=commit --status=completed --commit-sha=pending --summary="..."`.
    The `summary` **must** be Conventional Commits (`type(scope)?(!)?: description`)
    — the appender now rejects (exit 65) anything else and `make git`
    re-validates, so a malformed subject can never reach the commit log.
-6. **Tick the bullet's checkbox** in ROADMAP.md (or the plan document) using `multi_replace_string_in_file`.
+6. **Tick the bullet's checkbox** in ROADMAP.md (or the plan document) using an available file-editing tool.
 7. `git add -A`.
 8. **Move to the next `[ ]` bullet.** **Do not stop.** Do not hand back to the user. Do not cite token count or context limits. When a phase's bullets are all `[x]`, run that phase's *Test plan* line, **then run the per-phase quality gate below (implementer → reviewer → verifier)**, update the ROADMAP status snapshot, then **immediately start the next targeted phase** at step 1. Keep going until:
    - Every bullet in **every targeted phase** is `[x]` **and each phase passed the quality gate**, **OR**
@@ -147,7 +147,7 @@ Report exactly one. **`staged` only reports when the ENTIRE requested scope —
 every targeted phase — is complete.**
 
 - **`staged`** — **every `[ ]` bullet in every targeted phase is now `[x]`, each phase passed the reviewer → verifier gate, gates green, tracking rows appended, ROADMAP ticked + status snapshot updated, `git add -A` clean.** Report `run_id`s, file list, and the ticked box count. This is the **only success state**.
-- **`reverted`** — a bullet failed, could not be fixed within the rules, and the user declined to unblock it. Append `action=revert, status=failed`. `git restore .`. *Rare; most failures are fixed within the loop.*
+- **`reverted`** — a bullet failed, could not be fixed within the rules, and the user declined to unblock it. Append `action=revert, status=failed`. Undo only this task's isolated edits; preserve all unrelated work. *Rare; most failures are fixed within the loop.*
 - **`no-op`** — `git status -s` was already clean and no edit was needed (only for a trivial single-file plan, never for a phase or ROADMAP scope).
 - **`blocked`** — a documented **real** blocker (a decision only the human can make, scope outside the allow-list, a gate you cannot diagnose within the rules) **or** an involuntary interruption. Write `docs/tracking/state/checkpoint.json` + session memory + an `action=block` tracking row. *The next session resumes from the checkpoint and keeps draining.*
 

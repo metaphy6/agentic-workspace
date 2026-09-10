@@ -80,6 +80,12 @@ def scaffold(source: Path, target: Path, codex: bool, mcp: bool, skills: bool,
             f"cwd = {toml_string(str(target))}",
             "startup_timeout_sec = 60",
         ])
+        if server.get("env"):
+            config_lines.extend(["", "[mcp_servers.codegraph.env]"])
+            config_lines.extend(
+                f"{toml_string(key)} = {toml_string(value)}"
+                for key, value in sorted(server["env"].items())
+            )
     emit(".codex/config.toml", "\n".join(config_lines) + "\n")
 
     for path in sorted((source / ".github/agents").glob("*.agent.md")):

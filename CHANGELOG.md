@@ -20,6 +20,12 @@
 
 ### Fixed
 
+- Codex MCP configuration now preserves CodeGraph environment settings.
+- Shared agent rules preserve unrelated work on failed gates and allow local
+  exploration when CodeGraph is unavailable or disabled.
+- Skill descriptions and broken resource links are repaired; roadmap guidance
+  uses available editing tools and repository-local checkpoints.
+
 - `make git` no longer creates empty commits: all pending tracking rows in a
   staging window now ride one real commit (first pending summary as the
   subject, the rest under "Also includes:", one `[run_id]` trailer each), and

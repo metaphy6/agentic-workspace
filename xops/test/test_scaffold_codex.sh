@@ -63,6 +63,7 @@ assert server['args'][-2:] == ['--path', str(target)]
 assert server['cwd'] == str(target)
 generic = json.loads((target / '.mcp.json').read_text())
 assert generic['mcpServers']['codegraph']['args'][-2:] == ['--path', str(target)]
+assert server.get('env') == generic['mcpServers']['codegraph']['env'], 'Codex must preserve CodeGraph tool-selection environment'
 for instruction in (source / '.github/instructions').glob('*.instructions.md'):
     relative = instruction.relative_to(source)
     assert str(relative) in config['developer_instructions']

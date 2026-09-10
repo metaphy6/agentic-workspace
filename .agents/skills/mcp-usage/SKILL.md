@@ -1,6 +1,6 @@
 ---
 name: mcp-usage
-description: "MCP usage. You're considering reaching for an MCP server (CodeGraph, filesystem,"
+description: "Choose and use available MCP tools when a task needs their capabilities."
 ---
 
 # MCP usage
