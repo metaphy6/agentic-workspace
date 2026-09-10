@@ -54,4 +54,4 @@ roadmap.status:
 
 ## codeg             Initialize or update the CodeGraph index
 codeg:
-	@$(XOPS)/codegraph.py update
+	@$(XOPS)/codegraph_ops.py update

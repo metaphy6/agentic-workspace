@@ -25,7 +25,7 @@ xops/
     ├── git_ops.py
     ├── track_ops.py
     ├── roadmap_ops.py
-    └── codegraph.py
+    └── codegraph_ops.py
 ```
 
 ## Conventions
@@ -57,7 +57,7 @@ prompt-backed skills and correctly escaped MCP configuration. It needs Python
 | [`makefile/git_ops.py`](makefile/git_ops.py) | `make git` / `make git.dry`. |
 | [`makefile/track_ops.py`](makefile/track_ops.py) | `make track.add` / `make track.list`. |
 | [`makefile/roadmap_ops.py`](makefile/roadmap_ops.py) | `make roadmap.status`. |
-| [`makefile/codegraph.py`](makefile/codegraph.py) | `make codeg` — initialize or update the CodeGraph index. |
+| [`makefile/codegraph_ops.py`](makefile/codegraph_ops.py) | `make codeg` — initialize or update the CodeGraph index. |
 
 ## Add a new Makefile target
 

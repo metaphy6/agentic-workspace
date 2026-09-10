@@ -33,8 +33,8 @@ EOF
   output="$(PATH="$bin_dir:$PATH" CODEGRAPH_TEST_LOG="$log_file" make --no-print-directory codeg 2>&1)" || got=$?
 
   ok_if "make codeg exits 0 with codegraph runner (got $got)" "$([[ $got -eq 0 ]] && echo true || echo false)"
-  ok_if "make codeg logs success" "$([[ "$output" == *"CodeGraph updated"* ]] && echo true || echo false)"
-  ok_if "make codeg logs index lifecycle" "$([[ "$output" == *"CodeGraph initializing"* || "$output" == *"CodeGraph updating"* ]] && echo true || echo false)"
+  ok_if "make codeg logs success" "$([[ "$output" == *"index updated successfully"* ]] && echo true || echo false)"
+  ok_if "make codeg logs index lifecycle" "$([[ "$output" == *"init local index"* || "$output" == *"sync local index"* ]] && echo true || echo false)"
   ok_if "make codeg initializes the repository" "$([[ "$(<"$log_file")" == "init ." ]] && echo true || echo false)"
 
   rm -rf "$bin_dir"
@@ -43,9 +43,9 @@ EOF
 test_codeg_warns_without_runner() {
   local bin_dir python_path output="" got=0
   bin_dir="$(mktemp -d)"; python_path="$(command -v python3)"
-  output="$(PATH="$bin_dir" "$python_path" "$REPO_ROOT/xops/makefile/codegraph.py" update 2>&1)" || got=$?
+  output="$(PATH="$bin_dir" "$python_path" "$REPO_ROOT/xops/makefile/codegraph_ops.py" update 2>&1)" || got=$?
 
-  ok_if "codegraph warns when no runner is available" "$([[ $got -eq 1 && "$output" == *"was found"* ]] && echo true || echo false)"
+  ok_if "codegraph warns when no runner is available" "$([[ $got -eq 1 && "$output" == *"neither codegraph nor npx is available"* ]] && echo true || echo false)"
   rm -rf "$bin_dir"
 }
 
@@ -54,9 +54,9 @@ test_codeg_reports_runner_error() {
   bin_dir="$(mktemp -d)"; python_path="$(command -v python3)"
   printf '#!/bin/bash\nexit 7\n' > "$bin_dir/codegraph"
   chmod +x "$bin_dir/codegraph"
-  output="$(PATH="$bin_dir" "$python_path" "$REPO_ROOT/xops/makefile/codegraph.py" update 2>&1)" || got=$?
+  output="$(PATH="$bin_dir" "$python_path" "$REPO_ROOT/xops/makefile/codegraph_ops.py" update 2>&1)" || got=$?
 
-  ok_if "codegraph reports runner errors" "$([[ $got -eq 7 && "$output" == *"update failed"* ]] && echo true || echo false)"
+  ok_if "codegraph reports runner errors" "$([[ $got -eq 7 && "$output" == *"failed (exit code 7)"* ]] && echo true || echo false)"
   rm -rf "$bin_dir"
 }
 
